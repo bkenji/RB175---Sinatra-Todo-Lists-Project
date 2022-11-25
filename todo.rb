@@ -13,10 +13,6 @@ helpers do
     "class='complete'" if todo[:completed] 
   end
 
-  def print_self
-    self.class
-  end
-
   def all_checked?(todos)
     todos.all? {|todo| todo[:completed] == true}
   end
@@ -178,14 +174,7 @@ post '/lists/:list_number/todo_all' do
   @todos = @list[:todos]
 
 
-  if params[:check_all] == "true"
-   @todos.each {|todo| todo[:completed] = false}
-  elsif params[:check_all] == "false"
-    @todos.each {|todo| todo[:completed] = true}
-  else
-    @todos
-  end
-
+  @todos.each {|todo| todo[:completed] = true}
   session[:success] = "All todos have been updated."
 
   redirect "lists/#{@list_number}"
