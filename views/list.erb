@@ -1,10 +1,10 @@
-<section id="todos">
+<section id="todos" <%= list_completed?(@list)%>>
   <header>
     <div class="actions">
     <h2><%= @list[:name] %></h2>  
    <ul>
     <li><form action="/lists/<%= @list_number %>/todo_all" method="post">
-          <button type="submit" class="check" name="check_all" value= "true"> Check All </button>
+          <button type="submit" class="check" name="check_all" value= "true"> "Check All" </button>
         </form>
     <li><a class="edit" href="/lists/<%= params[:list_number] %>/edit"> Edit List </a></li>
     </ul>

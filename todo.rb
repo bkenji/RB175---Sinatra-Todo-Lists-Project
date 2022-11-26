@@ -16,6 +16,16 @@ helpers do
   def all_checked?(todos)
     todos.all? {|todo| todo[:completed] == true}
   end
+
+  def incomplete_count(todos)
+    todos.count{|todo| todo[:completed] == false}
+  end
+
+  def list_completed?(list)
+    if list[:todos].size > 0 && list[:todos].all?{|todo|todo[:completed]}
+      "class='complete'"
+    end
+  end
 end
 
 before do
@@ -31,6 +41,7 @@ end
 
 # View list of lists
 get '/lists' do
+  @todos = session[:lists]
   erb :lists, layout: :layout
 end
 
