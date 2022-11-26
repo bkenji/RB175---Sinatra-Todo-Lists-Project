@@ -3,7 +3,7 @@
     <li <%= list_completed?(list)%>>
       <a href="/lists/<%= idx %>">
         <h2><%= list[:name] %></h2>
-        <p><%= "#{incomplete_count(list[:todos])}/ #{list[:todos].size}" %></p>
+        <p><%= "#{incomplete_count(list[:todos])} / #{list[:todos].size}" %></p>
       </a>
     </li> 
   <% end %>
