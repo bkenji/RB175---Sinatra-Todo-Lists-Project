@@ -9,22 +9,20 @@ configure do
 end
 
 helpers do
-  def complete?(todo)
-    "class='complete'" if todo[:completed] 
+  def todo_class(todo)
+    "complete" if todo[:completed] 
   end
 
   def all_checked?(todos)
-    todos.all? {|todo| todo[:completed] == true}
+    todos.all? { |todo| todo[:completed] == true }
   end
 
   def incomplete_count(todos)
-    todos.count{|todo| todo[:completed] == false}
+    todos.count{ |todo| todo[:completed] == false }
   end
 
-  def list_completed?(list)
-    if list[:todos].size > 0 && list[:todos].all?{|todo|todo[:completed]}
-      "class='complete'"
-    end
+  def list_class(list)
+    "complete" if list[:todos].size > 0 && list[:todos].all?{ |todo| todo[:completed] }
   end
 end
 
@@ -138,7 +136,7 @@ post '/lists/:list_number/todos' do
   else 
     @todos << { name: params[:todo], completed: false}
     session[:success] = "Todo item was successfully added."
-    redirect "/lists/#{@list_number}"
+    redirect "/lists/#{ @list_number }"
   end
 end
 
@@ -155,7 +153,7 @@ post '/lists/:list_number/todos/:todo_number/delete' do
   else 
     session[:success] = "'#{@todos[@todo_index][:name]}' todo item was successfully deleted."
     @todos.delete_at(@todo_index)
-    redirect "/lists/#{@list_number}"
+    redirect "/lists/#{ @list_number }"
   end
 end
 
@@ -172,8 +170,8 @@ post '/lists/:list_number/todos/:todo_number' do
   @todo = @todos[@todo_index]
 
   @todo[:completed] = params[:completed] == "true" ? true : false
-  session[:success] = "\"#{@todo[:name]}\" has been marked as #{completed?}."
-  redirect "lists/#{@list_number}"
+  session[:success] = "\"#{ @todo[:name] }\" has been marked as #{completed?}."
+  redirect "lists/#{ @list_number }"
 end
 
 outer_self = self
@@ -184,16 +182,13 @@ post '/lists/:list_number/todo_all' do
   @list = @lists[@list_number]
   @todos = @list[:todos]
 
-
-  @todos.each {|todo| todo[:completed] = true}
+  @todos.each { |todo| todo[:completed] = true }
   session[:success] = "All todos have been updated."
 
-  redirect "lists/#{@list_number}"
+  redirect "lists/#{ @list_number }"
 end
-
 
 get '/logout' do
   session.clear
   redirect '/lists'
 end
-
