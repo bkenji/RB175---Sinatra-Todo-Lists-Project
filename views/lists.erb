@@ -1,6 +1,6 @@
 <ul id="lists">
   <% sort_lists(@lists) do |list, idx| %>
-    <li class=<%= 'complete' if list_completed?(list) %>>
+    <li class=<%= ('complete' if list_completed?(list)) %>>
       <a href="/lists/<%= idx %>">
         <h2><%= list[:name] %></h2>
         <p><%= "#{ remaining_todos_count(list) } / #{ todos_count(list) }" %></p>

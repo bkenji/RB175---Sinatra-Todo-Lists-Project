@@ -1,4 +1,4 @@
-<section id="todos" class =<%= 'complete' if list_completed?(@list) %>>
+<section id="todos" class =<%= ('complete' if list_completed?(@list)) %>>
   <header>
     <div class="actions">
     <h2><%= @list[:name] %></h2>  
