@@ -1,16 +1,16 @@
 <ul id="lists">
-  <% @lists.each.with_index do |list, idx| %>
-    <li class="<%=  list_class(list) %>">
+  <% sort_lists(@lists) do |list, idx| %>
+    <li class=<%= 'complete' if list_completed?(list) %>>
       <a href="/lists/<%= idx %>">
         <h2><%= list[:name] %></h2>
-        <p><%= "#{ incomplete_count(list[:todos]) } / #{ list[:todos].size }" %></p>
-      </a>
+        <p><%= "#{ remaining_todos_count(list) } / #{ todos_count(list) }" %></p>
+      </a> 
     </li> 
   <% end %>
 </ul>
 
   <% content_for :header_links do %>
-   <a href="/lists/new" class="add">Add new list</a>
+   <a href="/lists/new" class="add">New List</a>
   <% end %>
 
   <% content_for :header_links do%>

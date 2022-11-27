@@ -12,7 +12,7 @@
    </header>
    
     <ul>
-      <% @list[:todos].each.with_index do |todo, idx| %>
+      <% sort_todos(@list[:todos]) do |todo, idx| %>
       <li class=<%= todo_class(todo) %>>
       <form action="/lists/<%= @list_number %>/todos/<%= idx %>" method="post" class="check">
         <input type="hidden" name="completed" value="<%= todo[:completed] ? "false" : "true" %>" >
