@@ -106,10 +106,32 @@ post '/lists' do
   end
 end
 
+def valid_id?
+  params[:list_number].to_i.to_s == params[:list_number]
+end
+
+def load_list(index)
+  list = session[:lists][index] if index && session[:lists][index] && valid_id?
+
+  return list if list
+
+  session[:error] = !valid_id? ? "List ID must be a number." : "List was not found."
+  redirect "/lists"
+end
+
+
 # Retrieve individual lists
 get '/lists/:list_number' do
+#   if params[:list_number].to_i > @lists.size
+#     session[:error] = "List number is out of bounds. There are currently a total of #{@lists.size} list(s)."
+#     redirect '/lists'
+#   elsif params[:list_number].to_i.to_s != params[:list_number]
+#     session[:error] = "List ID must be a number."
+#     redirect '/lists'
+#   end
+    
   @list_number = params[:list_number].to_i
-  @list = @lists[@list_number]
+  @list = load_list(@list_number)
   @todos = @list[:todos]
 
   erb :list, layout: :layout
@@ -118,7 +140,7 @@ end
 # Edit an existing todo list
 get '/lists/:list_number/edit' do
   @list_number = params[:list_number].to_i
-  @list = @lists[@list_number]
+  @list = load_list(@list_number)
   erb :edit_list, layout: :layout
 end
 
@@ -126,7 +148,7 @@ end
 post '/lists/:list_number' do
   @list_name = params[:new_list_name].strip
   @list_number = params[:list_number].to_i
-  @list = @lists[@list_number]
+  @list = load_list(@list_number)
 
   if list_name_error
     session[:error] = list_name_error
@@ -136,6 +158,10 @@ post '/lists/:list_number' do
     session[:success] = 'List name has been updated.'
     redirect "/lists/#{@list_number}"
   end
+end
+
+not_found do
+  redirect '/lists'
 end
 
 # Delete a todo list
@@ -158,7 +184,7 @@ post '/lists/:list_number/todos' do
   @list_number = params[:list_number].to_i
   @todo_name = params[:todo].strip
   @todos = @lists[@list_number][:todos]
-  @list = @lists[@list_number]
+  @list = load_list(@list_number)
 
   if todo_name_error
     session[:error] = todo_name_error
@@ -173,7 +199,7 @@ end
 # Delete todo item from individual list
 post '/lists/:list_number/todos/:todo_number/delete' do
   @list_number = params[:list_number].to_i
-  @list = @lists[@list_number]
+  @list = load_list(@list_number)
   @todos = @list[:todos]
   @todo_index = params[:todo_number].to_i
 
@@ -194,7 +220,7 @@ end
 # Update status of a todo
 post '/lists/:list_number/todos/:todo_number' do
   @list_number = params[:list_number].to_i
-  @list = @lists[@list_number]
+  @list = load_list(@list_number)
   @todos = @list[:todos]
   @todo_index = params[:todo_number].to_i
   @todo = @todos[@todo_index]
@@ -207,7 +233,7 @@ end
 # Check all todos as complete for a list
 post '/lists/:list_number/todo_all' do
   @list_number = params[:list_number].to_i
-  @list = @lists[@list_number]
+  @list = load_list(@list_number)
   @todos = @list[:todos]
 
   @todos.each { |todo| todo[:completed] = true }
