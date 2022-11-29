@@ -183,6 +183,11 @@ def todo_name_error
   'Name must be between 1 and 100 characters.'
 end
 
+def next_todo_id(list)
+  list.map { |todo| todo[:id] }.max.to_i + 1 
+end 
+
+
 # Add new todo to list
 post '/lists/:list_number/todos' do
   @list_number = params[:list_number].to_i
@@ -194,32 +199,33 @@ post '/lists/:list_number/todos' do
     session[:error] = todo_name_error
     erb :list, layout: :layout
   else
-    @todos << { name: params[:todo], completed: false }
+    id = next_todo_id(@todos)
+    @todos << { id: id, name: params[:todo], completed: false }
     session[:success] = 'Todo item was successfully added.'
     redirect "/lists/#{@list_number}"
   end
 end
 
 # Delete todo item from individual list
-post '/lists/:list_number/todos/:todo_number/delete' do
+post '/lists/:list_number/todos/:todo_id/delete' do
   @list_number = params[:list_number].to_i
   @list = load_list(@list_number)
   @todos = @list[:todos]
-  @todo_index = params[:todo_number].to_i
+  @todo_id = params[:todo_id].to_i
 
-  if @todos[@todo_index].nil?# || @todos[@todo_index][:name] != params[:todo_name]
-    session[:error] = 'The todo item does not exist or has already been removed. Showing updated list.'
-    erb :list, layout: :layout
-  else
+  # if @todos[@todo_id].nil?# || @todos[@todo_id][:name] != params[:todo_name]
+  #   session[:error] = 'The todo item does not exist or has already been removed. Showing updated list.'
+  #   erb :list, layout: :layout
+  # else
     
-    @todos.delete_at(@todo_index)
+    # @todos.delete_at(@todo_idx)
+    @todos.reject! {|todo| todo[:id] == @todo_id}
     if env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"
       status 204
     else
       session[:success] = "Todo item was successfully deleted."
       redirect "/lists/#{@list_number}" 
     end
-  end
 end
 
 def completed?
@@ -227,12 +233,12 @@ def completed?
 end
 
 # Update status of a todo
-post '/lists/:list_number/todos/:todo_number' do
+post '/lists/:list_number/todos/:todo_id' do
   @list_number = params[:list_number].to_i
   @list = load_list(@list_number)
   @todos = @list[:todos]
-  @todo_index = params[:todo_number].to_i
-  @todo = @todos[@todo_index]
+  @todo_id = params[:todo_id].to_i
+  @todo = @todos.find {|todo| todo[:id] == @todo_id}
 
   @todo[:completed] = params[:completed] == 'true'
   session[:success] = "\"#{@todo[:name]}\" has been marked as #{completed?}."

@@ -4,13 +4,8 @@ $(function() {
    event.preventDefault();
    event.stopPropagation();
 
-
     if (confirm("Are you sure you want to go ahead? This cannot be undone.")) {
-      //AJAX request goes here
-      
-
       var item = $(this);
-
 
       var request = $.ajax({
         url: item.attr("action"),
