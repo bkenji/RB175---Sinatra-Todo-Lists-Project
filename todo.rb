@@ -7,7 +7,7 @@ require 'tilt/erubis'
 
 configure do
   enable :sessions
-  set :session_secret, 'ffb0ae7a3db963272cc584ec05b3afee945aca81f98972151b162c4cccea32e8'
+  set :session_secret, 'ffb0ae7a3db963272cc584ec05b3afee945aca81f98972151b162c4cccea32e9'
   set :erb, :escape_html => true
 end
 
@@ -169,7 +169,11 @@ post '/lists/:list_number/delete' do
   @list_number = params[:list_number]
   session[:success] = "\"#{@lists[@list_number.to_i][:name]}\" has been deleted."
   @lists.delete_at(@list_number.to_i)
-  redirect '/lists'
+  if env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"
+    "/lists"
+  else
+    redirect '/lists'
+  end
 end
 
 # Error handling for todo editing
@@ -203,13 +207,18 @@ post '/lists/:list_number/todos/:todo_number/delete' do
   @todos = @list[:todos]
   @todo_index = params[:todo_number].to_i
 
-  if @todos[@todo_index].nil? || @todos[@todo_index][:name] != params[:todo_name]
+  if @todos[@todo_index].nil?# || @todos[@todo_index][:name] != params[:todo_name]
     session[:error] = 'The todo item does not exist or has already been removed. Showing updated list.'
     erb :list, layout: :layout
   else
-    session[:success] = "'#{@todos[@todo_index][:name]}' todo item was successfully deleted."
+    
     @todos.delete_at(@todo_index)
-    redirect "/lists/#{@list_number}"
+    if env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"
+      status 204
+    else
+      session[:success] = "Todo item was successfully deleted."
+      redirect "/lists/#{@list_number}" 
+    end
   end
 end
 
@@ -242,7 +251,13 @@ post '/lists/:list_number/todo_all' do
   redirect "lists/#{@list_number}"
 end
 
-get '/logout' do
+get '/clear' do
   session.clear
-  redirect '/lists'
+  if env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"
+    session[:success] = "All lists deleted."
+    "/lists"
+  else
+    redirect '/lists'
+  end
+  
 end

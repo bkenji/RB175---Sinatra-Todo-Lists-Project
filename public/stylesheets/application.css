@@ -341,6 +341,11 @@ form fieldset.actions a:hover {
   background: transparent url("../images/icon_delete.png") 0 0 no-repeat; 
 }
 
+#todos header ul button.delete_2:before {
+  border: 2px solid transparent;
+  background: transparent url("../images/icon_delete.png") 0 0 no-repeat; 
+}
+
 #todos.complete header h2 {
   color: #bebebe;
   text-decoration: line-through; 

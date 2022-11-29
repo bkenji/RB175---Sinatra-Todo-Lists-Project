@@ -19,13 +19,14 @@
         <button type="submit">Complete</button>
       </form>
 
-        <h3> <%= todo[:name] %> </h3> 
+        <h3 class="todos"> <%= todo[:name] %> </h3> 
     
         <form action="/lists/<%= @list_number %>/todos/<%= idx %>/delete" method="post" class="delete">
           <button type="submit" name="todo_name" value= "<%= todo[:name] %>">Delete Task</button>
         </form>
       
       <% end %>
+      </li>
     </ul>
 </section>
 

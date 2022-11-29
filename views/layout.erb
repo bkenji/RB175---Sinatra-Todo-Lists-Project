@@ -17,6 +17,7 @@
     </div>
     </header>
     
+    <div class="flash_message">
     <% if session[:error] %>
       <div class="flash error">
         <p> <%= session.delete(:error) %> </p>
@@ -28,6 +29,7 @@
         <p> <%= session.delete(:success) %> </p>
       </div>
     <% end %>
+    </div>
 
     <main>
       <%== yield %>
